@@ -17,8 +17,7 @@ namespace LanchesMac.Controllers
         {
             return View();
         }
-
-        public IActionResult Privacy()
+        public IActionResult Demo()
         {
             return View();
         }
