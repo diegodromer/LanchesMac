@@ -93,15 +93,17 @@ Total de Pedidos : @Model.TotalRecordCount
                 @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PedidoEnviado)
+                @*@Html.DisplayFor(modelItem => item.PedidoEnviado)*@
+                @string.Format("{0:dd:MM:yyyy}", item.PedidoEnviado)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PedidoEntregueEm)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.PedidoId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PedidoId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PedidoId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.PedidoId">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.PedidoId">Detalhes</a> |
+                <a asp-action="Delete" asp-route-id="@item.PedidoId">Deletar</a> |
+                <a asp-action="PedidoLanches" asp-route-id="@item.PedidoId">Ver Lanches</a>
             </td>
         </tr>
 }

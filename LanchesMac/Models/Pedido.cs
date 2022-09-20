@@ -6,13 +6,13 @@ namespace LanchesMac.Models
     public class Pedido
     {
         public int PedidoId { get; set; }
-        
+
         [Required(ErrorMessage = "Informe o nome")]
         [StringLength(50)]
         public string Nome { get; set; }
 
-        [Required(ErrorMessage = "Informe o seu sobrenome")]
-        [StringLength (50)]
+        [Required(ErrorMessage = "Informe o sobrenome")]
+        [StringLength(50)]
         public string Sobrenome { get; set; }
 
         [Required(ErrorMessage = "Informe o seu endereço")]
@@ -26,19 +26,19 @@ namespace LanchesMac.Models
 
         [Required(ErrorMessage = "Informe o seu CEP")]
         [Display(Name = "CEP")]
-        [StringLength(10, MinimumLength = 8)]        
-        public string Cep{ get; set; }
+        [StringLength(10, MinimumLength = 8)]
+        public string Cep { get; set; }
 
-        [StringLength(10)]        
+        [StringLength(10)]
         public string Estado { get; set; }
 
         [StringLength(50)]
-        public string Cidade{ get; set; }
+        public string Cidade { get; set; }
 
-        [Required(ErrorMessage = "Informe o seu Telefone")]
+        [Required(ErrorMessage = "Informe o seu telefone")]
         [StringLength(25)]
         [DataType(DataType.PhoneNumber)]
-        public string Telefone{ get; set; }
+        public string Telefone { get; set; }
 
         [Required(ErrorMessage = "Informe o email.")]
         [StringLength(50)]
@@ -48,7 +48,7 @@ namespace LanchesMac.Models
         public string Email { get; set; }
 
         [ScaffoldColumn(false)]
-        [Column(TypeName = "decimal(18, 2)")]
+        [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "Total do Pedido")]
         public decimal PedidoTotal { get; set; }
 
@@ -67,5 +67,6 @@ namespace LanchesMac.Models
         public DateTime? PedidoEntregueEm { get; set; }
 
         public List<PedidoDetalhe> PedidoItens { get; set; }
+
     }
 }
