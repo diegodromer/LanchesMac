@@ -4,12 +4,12 @@ using LanchesMac.Models;
 using LanchesMac.Repositories;
 using LanchesMac.Repositories.Interfaces;
 using LanchesMac.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ReflectionIT.Mvc.Paging;
 
 namespace LanchesMac;
-
 public class Startup
 {
     public Startup(IConfiguration configuration)
@@ -25,26 +25,40 @@ public class Startup
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
         services.AddIdentity<IdentityUser, IdentityRole>()
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
+             .AddEntityFrameworkStores<AppDbContext>()
+             .AddDefaultTokenProviders();
 
+        services.Configure<ConfigurationImagens>(Configuration.GetSection("ConfigurationPastaImagens"));
+
+        //services.Configure<IdentityOptions>(options =>
+        //{
+        //    // Default Password settings.
+        //    options.Password.RequireDigit = false;
+        //    options.Password.RequireLowercase = false;
+        //    options.Password.RequireNonAlphanumeric = false;
+        //    options.Password.RequireUppercase = false;
+        //    options.Password.RequiredLength = 3;
+        //    options.Password.RequiredUniqueChars = 1;
+        //});
 
         services.AddTransient<ILancheRepository, LancheRepository>();
         services.AddTransient<ICategoriaRepository, CategoriaRepository>();
         services.AddTransient<IPedidoRepository, PedidoRepository>();
         services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
         services.AddScoped<RelatorioVendasService>();
+        services.AddScoped<GraficoVendasService>();
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("Admin", politica =>
-            {
-                politica.RequireRole("Admin");
-            });
+            options.AddPolicy("Admin",
+                politica =>
+                {
+                    politica.RequireRole("Admin");
+                });
         });
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-        services.AddScoped(sp => CarrinhoCompra.GetCarrinho(sp));   
+        services.AddScoped(sp => CarrinhoCompra.GetCarrinho(sp));
 
         services.AddControllersWithViews();
 
@@ -55,25 +69,18 @@ public class Startup
         });
 
         services.AddMemoryCache();
-        services.AddSession();
+        //services.AddDistributedMemoryCache();
 
-        //services.Configure<IdentityOptions>(options =>
+        services.AddSession();
         //{
-        //Defaut Password settings.
-        //  options.Password.RequireDigit = false;
-        //      options.Password.RequireLowercase = false;
-        //     options.Password.RequireNonAlphanumeric = false;
-        //    options.Password.RequireUppercase = false;
-        //   options.Password.RequiredLength = 3;
-        //  options.Password.RequiredUniqueChars = 1;
+        //    options.IdleTimeout = TimeSpan.FromSeconds(10);
+        //    options.Cookie.HttpOnly = true;
+        //    options.Cookie.IsEssential = true;
         //});
     }
 
-    public void Configure(
-        IApplicationBuilder app, 
-        IWebHostEnvironment env,
-        ISeedUserRoleInitial seedUserRoleInitial
-    )
+    public void Configure(IApplicationBuilder app,
+        IWebHostEnvironment env, ISeedUserRoleInitial seedUserRoleInitial)
     {
         if (env.IsDevelopment())
         {
@@ -81,7 +88,7 @@ public class Startup
         }
         else
         {
-            app.UseExceptionHandler();
+            app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
         }
         app.UseHttpsRedirection();
@@ -89,7 +96,9 @@ public class Startup
         app.UseStaticFiles();
         app.UseRouting();
 
+        //cria os perfis
         seedUserRoleInitial.SeedRoles();
+        //cria os usuários e atribui ao perfil
         seedUserRoleInitial.SeedUsers();
 
         app.UseSession();
@@ -97,12 +106,12 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllerRoute(
-                name: "areas",
-                pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}"
-            );
+             name: "areas",
+             pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
 
             endpoints.MapControllerRoute(
                name: "categoriaFiltro",
